@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#09080d">
+  <title>THE RAMPAGE SONG BATTLE | MUSIC CUP</title>
+  <meta name="description" content="Choose your favorite THE RAMPAGE song in MUSIC CUP.">
+  <style>
+    :root{--ink:#f6f2ff;--muted:#aaa4b3;--violet:#905cff;--paper:#09080d}*{box-sizing:border-box}
+    body{margin:0;color:var(--ink);background:var(--paper);font-family:Arial,"Microsoft YaHei",sans-serif}
+    button{font:inherit}main{min-height:100vh;overflow:hidden;position:relative;padding:72px 24px 30px;text-align:center;isolation:isolate;background:radial-gradient(ellipse at 50% -10%,#30165d 0%,#09080d 51%)}
+    .glow{position:absolute;z-index:-1;border-radius:50%;filter:blur(22px);opacity:.48}.g1{width:350px;height:350px;left:-130px;top:320px;background:#531caf}.g2{width:280px;height:280px;right:-140px;top:50px;background:#ff45a5;opacity:.2}
+    header{max-width:680px;margin:auto}.eyebrow{margin:0 0 15px;color:#bd9aff;font-size:11px;letter-spacing:.22em;font-weight:700}h1{margin:0;font-size:clamp(42px,9vw,78px);line-height:.82;letter-spacing:-.07em;font-weight:900}h1 span{color:transparent;-webkit-text-stroke:1px #d2b8ff}.intro{max-width:430px;margin:25px auto 44px;color:#b8b2c2;font-size:14px;line-height:1.8}
+    .arena{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,290px));justify-content:center;gap:25px;margin:auto}.song-card{min-height:250px;padding:24px;position:relative;display:flex;flex-direction:column;text-align:left;color:var(--ink);background:linear-gradient(145deg,#26202f,#121016);border:1px solid #494052;cursor:pointer;transition:.2s}.song-card:hover,.song-card.selected{transform:translateY(-7px);border-color:#b085ff;box-shadow:0 16px 45px #7a40d045}.number{color:#a57bff;font-size:12px;letter-spacing:.15em}.song-title{margin:auto 0 5px;font-size:clamp(31px,5vw,50px);letter-spacing:-.06em;font-weight:900;line-height:.9;overflow-wrap:anywhere}.artist{font-size:10px;letter-spacing:.13em;color:#b7b1c0}.pick{margin-top:30px;padding-top:13px;border-top:1px solid #4c4455;font-size:13px}.pick b{float:right;color:#c4a7ff;font-size:20px;line-height:12px}.versus{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:grid;place-items:center;height:48px;width:48px;border-radius:50%;background:#e7d6ff;color:#24133f;font-weight:900;font-size:12px;z-index:2}
+    .result{max-width:605px;margin:48px auto 24px;padding:25px;border-block:1px solid #41384b}.result .eyebrow{margin-bottom:9px}.winner{font-weight:900;font-size:28px;letter-spacing:-.04em}.result p:last-child{margin:10px 0 0;color:var(--muted);font-size:13px}.actions{display:flex;align-items:center;justify-content:center;gap:12px}.actions button{border:0;cursor:pointer}.text-button{color:#c1bacb;background:transparent;padding:12px;font-size:13px}.text-button:disabled{opacity:.35;cursor:default}.share-button{min-width:140px;padding:13px 22px;background:var(--violet);color:white;font-weight:700;box-shadow:0 8px 20px #6836c94d}.notice{height:18px;margin:12px 0;color:#cbb5ff;font-size:12px}footer{margin-top:42px;color:#746f7d;font-size:10px;letter-spacing:.12em}
+    @media(max-width:560px){main{padding-top:58px}.arena{grid-template-columns:1fr;gap:12px;max-width:360px}.song-card{min-height:185px}.song-title{margin-top:32px}.result{margin-top:35px}}
+  </style>
+</head>
+<body>
+  <main>
+    <div class="glow g1"></div><div class="glow g2"></div>
+    <header><p class="eyebrow">MUSIC CUP / BLACK FINAL</p><h1>THE RAMPAGE<br><span>SONG BATTLE</span></h1><p class="intro">一首歌，一次选择。选出此刻最想循环的 THE RAMPAGE 作品。</p></header>
+    <section class="arena" aria-label="歌曲对战">
+      <button class="song-card" data-song="100degrees"><span class="number">01</span><span class="song-title">100degrees</span><span class="artist">THE RAMPAGE</span><span class="pick">选择这首 <b>→</b></span></button>
+      <button class="song-card" data-song="BURN"><span class="number">02</span><span class="song-title">BURN</span><span class="artist">THE RAMPAGE</span><span class="pick">选择这首 <b>→</b></span></button>
+      <div class="versus">VS</div>
+    </section>
+    <section class="result" aria-live="polite"><p class="eyebrow">YOUR CURRENT PICK</p><div class="winner" id="winner">CHOOSE A SONG</div><p id="summary">点击任一歌曲，开始这场对决。</p></section>
+    <nav class="actions" aria-label="操作"><button class="text-button" id="undo" disabled>撤销</button><button class="share-button" id="share">分享结果</button><button class="text-button" id="reset" disabled>重新开始</button></nav>
+    <p class="notice" id="notice" aria-live="polite"></p>
+    <footer>THE RAMPAGE from EXILE TRIBE · FAN-MADE MUSIC CUP</footer>
+  </main>
+  <script>
+    const history=[],cards=[...document.querySelectorAll('.song-card')],winner=document.querySelector('#winner'),summary=document.querySelector('#summary'),undo=document.querySelector('#undo'),reset=document.querySelector('#reset'),notice=document.querySelector('#notice');
+    function render(){const pick=history.at(-1);winner.textContent=pick||'CHOOSE A SONG';summary.textContent=pick?`已完成 ${history.length} 次选择。它现在是你的冠军。`:'点击任一歌曲，开始这场对决。';cards.forEach(c=>c.classList.toggle('selected',c.dataset.song===pick));undo.disabled=reset.disabled=!history.length}
+    cards.forEach(card=>card.addEventListener('click',()=>{history.push(card.dataset.song);notice.textContent='';render()}));undo.addEventListener('click',()=>{history.pop();render()});reset.addEventListener('click',()=>{history.length=0;notice.textContent='';render()});
+    document.querySelector('#share').addEventListener('click',async()=>{const pick=history.at(-1),text=pick?`My MUSIC CUP winner is ${pick} — THE RAMPAGE SONG BATTLE`:'Choose your favorite in THE RAMPAGE SONG BATTLE';try{if(navigator.share)await navigator.share({title:'MUSIC CUP',text,url:location.href});else{await navigator.clipboard.writeText(`${text} ${location.href}`);notice.textContent='分享文字和链接已复制'}}catch(e){if(e.name!=='AbortError')notice.textContent='请复制浏览器地址分享'}});
+  </script>
+</body>
+</html>
